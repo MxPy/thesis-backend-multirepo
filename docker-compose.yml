@@ -11,7 +11,7 @@ services:
       users:
         condition: service_started
     volumes:
-      - ./gateway:/app
+      - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
 
@@ -25,7 +25,7 @@ services:
       mongo:
         condition: service_healthy
     volumes:
-      - ./:/code:ro
+      - ./thesis-prototype-server:/code:ro
     environment:
       - DATABASE_URL=postgresql://postgres:mysecretpassword@db/users
     expose:
@@ -59,7 +59,7 @@ services:
     image: mongo:latest
     volumes:
       - mongo_data:/data/db
-      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./thesis-prototype-server/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - app-network
     expose:
