@@ -14,6 +14,20 @@ services:
       - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
+  
+  admin-gateway:
+    build:
+        context: ./thesis-prototype-admin-apigateway
+        dockerfile: Dockerfile
+    depends_on:
+      users:
+        condition: service_healthy
+    ports:
+      - 8001:8000
+    volumes:
+      - ./thesis-prototype-admin-apigateway:/app
+    networks:
+      - app-network
 
   users:
     build:
