@@ -9,7 +9,7 @@ services:
       - 8000:8000
     depends_on:
       users:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./thesis-prototype-apigateway:/app
     networks:
@@ -32,13 +32,18 @@ services:
       - 8000
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://users:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   db:
     #mac
-    #image: postgres:14
+    image: postgres:14
     #pc
-    image: postgres:latest
+    #image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     expose:
