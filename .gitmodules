@@ -2,7 +2,11 @@
  	path = thesis-prototype-server 
  	url = https://github.com/MxPy/thesis-prototype-server
  	branch = main
- [submodule "gateway"] 
- 	path = thesis-prototype-apigateway 
- 	url = https://github.com/MxPy/thesis-prototype-apigateway
- 	branch = main
+[submodule "gateway"] 
+	path = thesis-prototype-apigateway 
+	url = https://github.com/MxPy/thesis-prototype-apigateway
+	branch = main
+[submodule "admin-gateway"] 
+	path = thesis-prototype-apigateway 
+	url = https://github.com/MxPy/thesis-prototype-admin-apigateway
+	branch = master
