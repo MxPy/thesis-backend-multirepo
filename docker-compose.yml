@@ -42,8 +42,10 @@ services:
       - ./thesis-prototype-server:/code:ro
     environment:
       - DATABASE_URL=postgresql://postgres:mysecretpassword@db/users
-    expose:
-      - 8000
+    # expose:
+    #   - 8000
+    ports:
+      - 8002:8000
     networks:
       - app-network
     healthcheck:
