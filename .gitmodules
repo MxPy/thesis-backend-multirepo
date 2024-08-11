@@ -10,3 +10,6 @@
 	path = thesis-prototype-admin-apigateway 
 	url = https://github.com/MxPy/thesis-prototype-admin-apigateway
 	branch = master
+[submodule "thesis-sensors-service"]
+	path = thesis-sensors-service
+	url = https://github.com/iraszewska/thesis-sensors-service.git
