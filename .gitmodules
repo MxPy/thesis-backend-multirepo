@@ -13,7 +13,11 @@
 [submodule "thesis-sensors-service"]
 	path = thesis-sensors-service
 	url = https://github.com/iraszewska/thesis-sensors-service
+
+[submodule "thesis-health-data-provider"]
+	path = thesis-health-data-provider
+	url = https://github.com/iraszewska/thesis-health-data-provider
+
 [submodule "thesis-mock-server"]
-	path = thesis-sensors-service
+	path = thesis-mock-server
 	url = https://github.com/MxPy/thesis-mock-server
-	
