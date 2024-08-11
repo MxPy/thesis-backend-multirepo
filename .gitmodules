@@ -12,4 +12,8 @@
 	branch = master
 [submodule "thesis-sensors-service"]
 	path = thesis-sensors-service
-	url = https://github.com/iraszewska/thesis-sensors-service.git
+	url = https://github.com/iraszewska/thesis-sensors-service
+[submodule "thesis-mock-server"]
+	path = thesis-sensors-service
+	url = https://github.com/MxPy/thesis-mock-server
+	
