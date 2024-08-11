@@ -110,7 +110,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      TIMESCALE_URL: postgres://postgres:pass@postgres:5432/postgresdb
+      TIMESCALE_URL: postgresql://postgres:mysecretpassword@db/users
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
       interval: 30s
