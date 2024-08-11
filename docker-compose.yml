@@ -10,6 +10,12 @@ services:
     depends_on:
       users:
         condition: service_healthy
+      sensors:
+        condition: service_healthy
+      # health:
+      #   condition: service_healthy
+      mock:
+        condition: service_healthy
     volumes:
       - ./thesis-prototype-apigateway:/app
     networks:
@@ -21,6 +27,12 @@ services:
         dockerfile: Dockerfile
     depends_on:
       users:
+        condition: service_healthy
+      sensors:
+        condition: service_healthy
+      # health:
+      #   condition: service_healthy
+      mock:
         condition: service_healthy
     ports:
       - 8001:8000
@@ -54,6 +66,60 @@ services:
       timeout: 5s
       retries: 5
 
+  mock:
+    build:
+      context: ./thesis-mock-server
+      dockerfile: Dockerfile
+    ports:
+      - 8003:8000
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://users:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sensors:
+    build:
+        context: ./thesis-sensors-service
+        dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    environment:
+      TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - app-network
+
+  health:
+    build:
+        context: ./thesis-health-data-provider
+        dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TIMESCALE_URL: postgres://postgres:pass@postgres:5432/postgresdb
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - app-network
+
 
   db:
     #mac
@@ -75,6 +141,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: timescaledb
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+
   
   mongo:
     image: mongo:latest
@@ -103,3 +189,4 @@ networks:
 volumes:
       postgres_data: 
       mongo_data:
+      timescale-data:
