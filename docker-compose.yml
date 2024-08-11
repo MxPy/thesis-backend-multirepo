@@ -10,8 +10,8 @@ services:
     depends_on:
       users:
         condition: service_healthy
-      sensors:
-        condition: service_healthy
+      # sensors:
+      #   condition: service_healthy
       # health:
       #   condition: service_healthy
       mock:
@@ -28,8 +28,8 @@ services:
     depends_on:
       users:
         condition: service_healthy
-      sensors:
-        condition: service_healthy
+      # sensors:
+      #   condition: service_healthy
       # health:
       #   condition: service_healthy
       mock:
