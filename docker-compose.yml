@@ -14,32 +14,32 @@ services:
       #   condition: service_healthy
       # health:
       #   condition: service_healthy
-      mock:
-        condition: service_healthy
+      # mock:
+      #   condition: service_healthy
     volumes:
       - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
   
-  admin-gateway:
-    build:
-        context: ./thesis-prototype-admin-apigateway
-        dockerfile: Dockerfile
-    depends_on:
-      users:
-        condition: service_healthy
-      # sensors:
-      #   condition: service_healthy
-      # health:
-      #   condition: service_healthy
-      mock:
-        condition: service_healthy
-    ports:
-      - 8001:8000
-    volumes:
-      - ./thesis-prototype-admin-apigateway:/app
-    networks:
-      - app-network
+  # admin-gateway:
+  #   build:
+  #       context: ./thesis-prototype-admin-apigateway
+  #       dockerfile: Dockerfile
+  #   depends_on:
+  #     users:
+  #       condition: service_healthy
+  #     # sensors:
+  #     #   condition: service_healthy
+  #     # health:
+  #     #   condition: service_healthy
+  #     mock:
+  #       condition: service_healthy
+  #   ports:
+  #     - 8001:8000
+  #   volumes:
+  #     - ./thesis-prototype-admin-apigateway:/app
+  #   networks:
+  #     - app-network
 
   users:
     build:
@@ -66,19 +66,19 @@ services:
       timeout: 5s
       retries: 5
 
-  mock:
-    build:
-      context: ./thesis-mock-server
-      dockerfile: Dockerfile
-    ports:
-      - 8003:8000
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://users:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # mock:
+  #   build:
+  #     context: ./thesis-mock-server
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8003:8000
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://users:8000/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
   sensors:
     build:
