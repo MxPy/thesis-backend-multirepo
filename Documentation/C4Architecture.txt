@@ -1,0 +1,83 @@
+workspace {
+
+    model {
+        user = person "User" "A user of our software system."
+        admin = person "Admin" "A Administrator of our software system."
+            
+        softwareSystem = softwareSystem "Software System" "Band Data and Social App Software System"{
+            group Docker {
+                UsersApiGateway = container "Users Api Gateways Service" "Grant Users access to services"
+                AdminsApiGateway = container  "Admins Api Gateway Service" "Grant Admins access to services"
+                authService = container  "User Authorization And Authenticaton Service" "Authenticate and Authorizate Users"
+                bandService = container "Band Data Service" "Handle band Data"
+                socialAppService = container "Social App Service" "Process User Data"
+                databasesServices = container "SQL, No-SQL and Objects Databases" "Keep data"{
+                    tags "Database"
+                }
+                adminWebPanel = container "Admin Web Panel" "Show admin to user and take admin input"
+            }
+            
+            iosApp = container "iOS mobile APP" "Show data to user and take user input"
+            androidApp = container "Android mobile APP" "Show data to user and take user input"
+            
+        }
+        bandSystem = softwareSystem "Band Device" "Band Firmware"{
+            sensorDrivers = container "Sensors Drivers" "Reads sensors data"
+            communicationlDrivers = container "Communication Drivers" "Sets up communication with Band Data Software System Gateway"
+            contorlDrivers = container "Control Drivers" "Reads control data"
+            databaseDriver = container "Database Driver" "Reads and saves date from/to Cache Database"
+            database = container "Database" "Database used as cache for sensors data"{
+                tags "Database"
+            }
+            
+        }
+
+        user -> iosApp "Uses"
+        user -> androidApp "Uses"
+        admin -> adminWebPanel "Uses"
+        user -> bandSystem "Wears"
+        
+        
+        communicationlDrivers -> androidApp "Send and Recive Sensors Data"
+        communicationlDrivers -> iosApp "Send and Recive Sensors Data"
+        androidApp -> UsersApiGateway "Send and Recive Sensors Data"
+        iosApp -> UsersApiGateway "Send and Recive Sensors Data"
+        databaseDriver -> database "Reads and Writes Data
+        sensorDrivers -> databaseDriver "Sends sensor Data"
+        databaseDriver -> communicationlDrivers "Sends sensor Data"
+        contorlDrivers -> databaseDriver "Controlsa"
+        contorlDrivers -> communicationlDrivers "Controls"
+        contorlDrivers -> sensorDrivers "Controls"
+        
+        iosApp -> UsersApiGateway "Send and Recive Data [REST]"
+        androidApp -> UsersApiGateway "Send and Recive Data [REST]"
+        adminWebPanel -> AdminsApiGateway "Send and Recive Data [REST]"
+        UsersApiGateway -> authService "Authenticate and Athorizate user"
+        UsersApiGateway -> databasesServices "Send and Recive Data [REST]"
+        UsersApiGateway -> socialAppService "Send and Recive Data [REST]"
+        UsersApiGateway -> databasesServices "Reads and Writes Objects"
+        
+        UsersApiGateway -> bandService "Send and Recive Data "
+        
+        AdminsApiGateway -> authService "Authenticate and Athorizate user"
+        AdminsApiGateway -> bandService "Send and Recive Data [REST]"
+        AdminsApiGateway -> databasesServices "Send and Recive Data [REST]"
+        AdminsApiGateway -> socialAppService "Send and Recive Data [REST]"
+        AdminsApiGateway -> databasesServices "Reads and Writes Objects"
+        authService -> databasesServices "Reads and Writes Data"
+        bandService -> databasesServices "Reads and Writes Data"
+        socialAppService -> databasesServices "Reads and Writes Data"
+
+        
+    }
+
+    views {
+    styles {
+        element "Database" {
+                    shape cylinder
+                }
+            }
+        theme default
+        
+    }
+}
