@@ -26,32 +26,33 @@ services:
     networks:
       - app-network
   
-  # admin-gateway:
-  #   build:
-  #       context: ./thesis-prototype-admin-apigateway
-  #       dockerfile: Dockerfile
-  #   depends_on:
-  #     users:
-  #       condition: service_healthy
-  #     # sensors:
-  #     #   condition: service_healthy
-  #     # health:
-  #     #   condition: service_healthy
-  #     mock:
-  #       condition: service_healthy
-  #   develop:
-  #     watch:
-  #       - action: sync
-  #         path: ./thesis-prototype-admin-apigateway
-  #         target: /app
-  #       - action: rebuild
-  #         path: ./thesis-prototype-admin-apigateway/req.txt
-  #   ports:
-  #     - 8001:8000
-  #   volumes:
-  #     - ./thesis-prototype-admin-apigateway:/app
-  #   networks:
-  #     - app-network
+  admin-gateway:
+    build:
+        context: ./thesis-prototype-admin-apigateway
+        dockerfile: Dockerfile
+    depends_on:
+      users:
+        condition: service_healthy
+      # sensors:
+      #   condition: service_healthy
+      # health:
+      #   condition: service_healthy
+      mock:
+        condition: service_healthy
+    profiles: ["admin", "prod", "all"]
+    develop:
+      watch:
+        - action: sync
+          path: ./thesis-prototype-admin-apigateway
+          target: /app
+        - action: rebuild
+          path: ./thesis-prototype-admin-apigateway/req.txt
+    ports:
+      - 8001:8000
+    volumes:
+      - ./thesis-prototype-admin-apigateway:/app
+    networks:
+      - app-network
 
   users:
     build:
@@ -85,26 +86,27 @@ services:
       timeout: 5s
       retries: 5
 
-  # mock:
-  #   build:
-  #     context: ./thesis-mock-server
-  #     dockerfile: Dockerfile
-  #   develop:
-  #     watch:
-  #       - action: sync
-  #         path: ./thesis-mock-server
-  #         target: /app
-  #       - action: rebuild
-  #         path: ./thesis-mock-server/req.txt
-  #   ports:
-  #     - 8003:8000
-  #   networks:
-  #     - app-network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://users:8000/health"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  mock:
+    build:
+      context: ./thesis-mock-server
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./thesis-mock-server
+          target: /app
+        - action: rebuild
+          path: ./thesis-mock-server/req.txt
+    ports:
+      - 8003:8000
+    profiles: ["mock", "all"]
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://users:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   sensors:
     build:
@@ -117,6 +119,7 @@ services:
         condition: service_healthy
     environment:
       TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
+    profiles: ["sensors", "prod", "all"]
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
       interval: 30s
@@ -137,6 +140,7 @@ services:
         condition: service_healthy
     environment:
       TIMESCALE_URL: postgresql://postgres:mysecretpassword@db/users
+    profiles: ["health", "prod", "all"]
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
       interval: 30s
@@ -177,6 +181,7 @@ services:
       POSTGRES_DB: timescaledb
     ports:
       - "5432:5432"
+    profiles: ["sensors", "prod", "all"]
     volumes:
       - timescale-data:/var/lib/postgresql/data
     healthcheck:
