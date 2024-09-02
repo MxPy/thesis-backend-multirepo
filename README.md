@@ -7,6 +7,5 @@ To run it
 5. ```docker compose --profile [with selected services (see compose file)] up -d```
 6. ```docker compose watch``` *for development only 
 
-Documentation
 C4 Architecture diagram is in Documentation folder
 you can render it here: https://structurizr.com/dsl
