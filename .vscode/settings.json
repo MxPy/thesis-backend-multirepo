@@ -1,5 +1,4 @@
 {
-    "dotnet.defaultSolution": "SuNoFes-Pirate-Software-Game-Jam-2024.sln",
     "background.fullscreen": {
     "images": ["https://i.redd.it/q5vqv973wot71.gif"], // urls of your images
     "opacity": 0.91, // 0.85 ~ 0.95 recommended
