@@ -65,6 +65,8 @@ services:
         condition: service_healthy
     ports:
       - 8002:8000
+    expose:
+      - 50051
     develop:
       watch:
         - action: sync
