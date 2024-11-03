@@ -23,7 +23,7 @@
 
 - `python -m grpc_tools.protoc -I ./protos --python_out=. --grpc_python_out=. workout.proto`
 9. ```cd .\thesis-backend\```
-10. ```cd .\thesis-backend\```
+10. ```docker compose up --build``` to run base services
 
 
 > If it still won't work message [@MxPy](https://github.com/MxPy) or [@iraszewska](https://github.com/iraszewska)
