@@ -134,49 +134,6 @@ services:
       MINIO_PORT: 9000
       MINIO_SECURE: False
       MINIO_BUCKET_NAME: minio-bucket
-
-
-  db:
-    #mac
-    #image: postgres:14
-    #pc
-    image: postgres:latest
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    expose:
-      - 5433
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=mysecretpassword
-      - POSTGRES_DB=users
-    networks:
-    - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  
-  timescaledb:
-    image: timescale/timescaledb:latest-pg16
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: timescaledb
-    ports:
-      - "5432:5432"
-    profiles: ["sensors", "prod", "all"]
-    volumes:
-      - timescale-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - app-network
-
   
   mongo:
     image: mongo:latest
@@ -197,6 +154,121 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5433
+    environment:
+      POSTGRES_DB: postgres     
+      POSTGRES_USER: postgres            
+      POSTGRES_PASSWORD: mysecretpassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+  
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: timescaledb
+    ports:
+      - "5432:5432"
+    # profiles: ["sensors", "prod", "all"]
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+  
+  app-postgres-wrapper:
+    build:
+      context: ./thesis-backend/thesis-health-wrapper
+    ports: 
+      # - 3001  # HTTP
+      - "50053:50053"  # Changed external gRPC port to avoid conflict
+    # profiles: ["sensors", "prod", "all"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_URL: postgres://postgres:mysecretpassword@db:5433/postgres
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 40s
+    networks:
+      - app-network
+
+  # REST + gRPC Server
+  user-node-service:
+    build:
+      context: ./thesis-backend/thesis-health-data-provider
+    ports:
+      - "3002:3002"  # HTTP API
+      # - "50051:50051"  # gRPC for SensorService
+      # - "50052:50052"  # gRPC for UserService 
+    # profiles: ["sensors", "prod", "all"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - app-network   
+  
+  app-timescale-wrapper:
+    build: 
+      context: ./thesis-backend/thesis-timescale-service
+    ports:
+      - "3000:3000"  # HTTP endpoint (not needed anymore)
+      - "50051:50051"  # gRPC endpoint
+    # profiles: ["sensors", "prod", "all"]
+    depends_on:
+      timescaledb:
+        condition: service_healthy 
+    environment:
+      TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 40s
+    networks:
+      - app-network
+
+  # REST + gRPC Server
+  sensor-py-service:
+    build:
+      context: ./thesis-backend/thesis-sensors-py-service
+    ports:
+      - "8004:8000" # HTTP API
+    # profiles: ["sensors", "prod", "all"]
+    volumes:
+      - ./thesis-backend/thesis-sensors-py-service:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - timescaledb
+    networks:
+      - app-network
 
 networks:
   app-network:
