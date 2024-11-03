@@ -8,10 +8,6 @@ services:
     depends_on:
       users:
         condition: service_healthy
-      # sensors:
-      #   condition: service_healthy
-      # health:
-      #   condition: service_healthy
       # mock:
       #   condition: service_healthy
     develop:
@@ -33,10 +29,6 @@ services:
     depends_on:
       users:
         condition: service_healthy
-      # sensors:
-      #   condition: service_healthy
-      # health:
-      #   condition: service_healthy
       mock:
         condition: service_healthy
     profiles: ["admin", "prod", "all"]
@@ -110,6 +102,20 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: "rabbitmq:3.11.8-management-alpine"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
+
   minio:
     container_name: minio
     image: minio/minio
@@ -128,48 +134,6 @@ services:
       MINIO_PORT: 9000
       MINIO_SECURE: False
       MINIO_BUCKET_NAME: minio-bucket
-
-  sensors:
-    build:
-        context: ./thesis-sensors-service
-        dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      timescaledb:
-        condition: service_healthy
-    environment:
-      TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
-    profiles: ["sensors", "prod", "all"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    networks:
-      - app-network
-
-  health:
-    build:
-        context: ./thesis-health-data-provider
-        dockerfile: Dockerfile
-    ports:
-      - "3001:3000"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      TIMESCALE_URL: postgresql://postgres:mysecretpassword@db/users
-    profiles: ["health", "prod", "all"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    networks:
-      - app-network
 
 
   db:
