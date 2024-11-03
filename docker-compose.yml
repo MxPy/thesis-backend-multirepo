@@ -102,6 +102,19 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: "rabbitmq:3.11.8-management-alpine"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - app-network
+    restart: always
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 30s
+      retries: 3
 
   minio:
     container_name: minio
