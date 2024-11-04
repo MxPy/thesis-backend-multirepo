@@ -1,126 +1,125 @@
 services:
-  gateway:
-    build:
-        context: ./thesis-prototype-apigateway
-        dockerfile: Dockerfile
-    ports:
-      - 8000:8000
-    depends_on:
-      users:
-        condition: service_healthy
-      # mock:
-      #   condition: service_healthy
-    develop:
-      watch:
-        - action: sync
-          path: ./thesis-prototype-apigateway
-          target: /app
-        - action: rebuild
-          path: ./thesis-prototype-apigateway/req.txt
-    # volumes:
-    #   - ./thesis-prototype-apigateway:/app
-    networks:
-      - app-network
+  # gateway:
+  #   build:
+  #       context: ./thesis-prototype-apigateway
+  #       dockerfile: Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     users:
+  #       condition: service_healthy
+  #     # mock:
+  #     #   condition: service_healthy
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./thesis-prototype-apigateway
+  #         target: /app
+  #       - action: rebuild
+  #         path: ./thesis-prototype-apigateway/req.txt
+  #   # volumes:
+  #   #   - ./thesis-prototype-apigateway:/app
+  #   networks:
+  #     - app-network
   
-  admin-gateway:
-    build:
-        context: ./thesis-prototype-admin-apigateway
-        dockerfile: Dockerfile
-    depends_on:
-      users:
-        condition: service_healthy
-      mock:
-        condition: service_healthy
-    profiles: ["admin", "prod", "all"]
-    develop:
-      watch:
-        - action: sync
-          path: ./thesis-prototype-admin-apigateway
-          target: /app
-        - action: rebuild
-          path: ./thesis-prototype-admin-apigateway/req.txt
-    ports:
-      - 8001:8000
-    volumes:
-      - ./thesis-prototype-admin-apigateway:/app
-    networks:
-      - app-network
+  # admin-gateway:
+  #   build:
+  #       context: ./thesis-prototype-admin-apigateway
+  #       dockerfile: Dockerfile
+  #   depends_on:
+  #     users:
+  #       condition: service_healthy
+  #     mock:
+  #       condition: service_healthy
+  #   profiles: ["admin", "prod", "all"]
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./thesis-prototype-admin-apigateway
+  #         target: /app
+  #       - action: rebuild
+  #         path: ./thesis-prototype-admin-apigateway/req.txt
+  #   ports:
+  #     - 8001:8000
+  #   volumes:
+  #     - ./thesis-prototype-admin-apigateway:/app
+  #   networks:
+  #     - app-network
 
-  users:
-    build:
-      context: ./thesis-prototype-server
-      dockerfile: Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy
-      mongo:
-        condition: service_healthy
-    ports:
-      - 8002:8000
-    expose:
-      - 50051
-    develop:
-      watch:
-        - action: sync
-          path: ./thesis-prototype-server
-          target: /app
-        - action: rebuild
-          path: ./thesis-prototype-server/req.txt
-    # volumes:
-    #   - ./thesis-prototype-server:/app
-    environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@db/users
-    # expose:
-    #   - 8000
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://users:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # users:
+  #   build:
+  #     context: ./thesis-prototype-server
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     mongo:
+  #       condition: service_healthy
+  #   ports:
+  #     - 8002:8000
+  #   expose:
+  #     - 50051
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./thesis-prototype-server
+  #         target: /app
+  #       - action: rebuild
+  #         path: ./thesis-prototype-server/req.txt
+  #   # volumes:
+  #   #   - ./thesis-prototype-server:/app
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:mysecretpassword@db/users
+  #   # expose:
+  #   #   - 8000
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://users:8000/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
-  mock:
-    build:
-      context: ./thesis-mock-server
-      dockerfile: Dockerfile
-    develop:
-      watch:
-        - action: sync
-          path: ./thesis-mock-server
-          target: /app
-        - action: rebuild
-          path: ./thesis-mock-server/req.txt
-    ports:
-      - 8003:8000
-    profiles: ["mock","images", "all"]
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://users:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # mock:
+  #   build:
+  #     context: ./thesis-mock-server
+  #     dockerfile: Dockerfile
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./thesis-mock-server
+  #         target: /app
+  #       - action: rebuild
+  #         path: ./thesis-mock-server/req.txt
+  #   ports:
+  #     - 8003:8000
+  #   profiles: ["mock","images", "all"]
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://users:8000/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
-  rabbitmq:
-    image: "rabbitmq:3.11.8-management-alpine"
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    networks:
-      - app-network
-    restart: always
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 10s
-      timeout: 30s
-      retries: 3
+  # rabbitmq:
+  #   image: "rabbitmq:3.11.8-management-alpine"
+  #   ports:
+  #     - "15672:15672"
+  #     - "5672:5672"
+  #   networks:
+  #     - app-network
+  #   restart: always
+  #   healthcheck:
+  #     test: rabbitmq-diagnostics -q ping
+  #     interval: 10s
+  #     timeout: 30s
+  #     retries: 3
 
   minio:
     container_name: minio
     image: minio/minio
     restart: always
-    profiles: ["mock","minio","images", "all"]
     command: server --console-address :9001 --address 0.0.0.0:9000 /data
     networks:
       - app-network
@@ -135,146 +134,146 @@ services:
       MINIO_SECURE: False
       MINIO_BUCKET_NAME: minio-bucket
   
-  mongo:
-    image: mongo:latest
-    volumes:
-      - mongo_data:/data/db
-      - ./thesis-prototype-server/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - app-network
-    expose:
-      - 27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: Username
-      MONGO_INITDB_ROOT_PASSWORD: Password
-      MONGO_INITDB_DATABASE: sessions
-    healthcheck:
-      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+#   mongo:
+#     image: mongo:latest
+#     volumes:
+#       - mongo_data:/data/db
+#       - ./thesis-prototype-server/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+#     networks:
+#       - app-network
+#     expose:
+#       - 27017
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: Username
+#       MONGO_INITDB_ROOT_PASSWORD: Password
+#       MONGO_INITDB_DATABASE: sessions
+#     healthcheck:
+#       test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 3
+#       start_period: 5s
 
-  db:
-    image: postgres:latest
-    restart: unless-stopped
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    expose:
-      - 5433
-    environment:
-      POSTGRES_DB: postgres     
-      POSTGRES_USER: postgres            
-      POSTGRES_PASSWORD: mysecretpassword
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - app-network
+#   db:
+#     image: postgres:latest
+#     restart: unless-stopped
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data/
+#     expose:
+#       - 5433
+#     environment:
+#       POSTGRES_DB: postgres     
+#       POSTGRES_USER: postgres            
+#       POSTGRES_PASSWORD: mysecretpassword
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     networks:
+#       - app-network
   
-  timescaledb:
-    image: timescale/timescaledb:latest-pg16
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: timescaledb
-    ports:
-      - "5432:5432"
-    # profiles: ["sensors", "prod", "all"]
-    volumes:
-      - timescale-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - app-network
+#   timescaledb:
+#     image: timescale/timescaledb:latest-pg16
+#     restart: unless-stopped
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: pass
+#       POSTGRES_DB: timescaledb
+#     ports:
+#       - "5432:5432"
+#     # profiles: ["sensors", "prod", "all"]
+#     volumes:
+#       - timescale-data:/var/lib/postgresql/data
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 5
+#     networks:
+#       - app-network
   
-  app-postgres-wrapper:
-    build:
-      context: ./thesis-backend/thesis-health-wrapper
-    ports: 
-      # - 3001  # HTTP
-      - "50053:50053"  # Changed external gRPC port to avoid conflict
-    # profiles: ["sensors", "prod", "all"]
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      POSTGRES_URL: postgres://postgres:mysecretpassword@db:5433/postgres
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
-    #   start_period: 40s
-    networks:
-      - app-network
+#   app-postgres-wrapper:
+#     build:
+#       context: ./thesis-backend/thesis-health-wrapper
+#     ports: 
+#       # - 3001  # HTTP
+#       - "50053:50053"  # Changed external gRPC port to avoid conflict
+#     # profiles: ["sensors", "prod", "all"]
+#     depends_on:
+#       db:
+#         condition: service_healthy
+#     environment:
+#       POSTGRES_URL: postgres://postgres:mysecretpassword@db:5433/postgres
+#     # healthcheck:
+#     #   test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
+#     #   interval: 30s
+#     #   timeout: 10s
+#     #   retries: 5
+#     #   start_period: 40s
+#     networks:
+#       - app-network
 
-  # REST + gRPC Server
-  user-node-service:
-    build:
-      context: ./thesis-backend/thesis-health-data-provider
-    ports:
-      - "3002:3002"  # HTTP API
-      # - "50051:50051"  # gRPC for SensorService
-      # - "50052:50052"  # gRPC for UserService 
-    # profiles: ["sensors", "prod", "all"]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    networks:
-      - app-network   
+#   # REST + gRPC Server
+#   user-node-service:
+#     build:
+#       context: ./thesis-backend/thesis-health-data-provider
+#     ports:
+#       - "3002:3002"  # HTTP API
+#       # - "50051:50051"  # gRPC for SensorService
+#       # - "50052:50052"  # gRPC for UserService 
+#     # profiles: ["sensors", "prod", "all"]
+#     healthcheck:
+#       test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 5
+#       start_period: 40s
+#     networks:
+#       - app-network   
   
-  app-timescale-wrapper:
-    build: 
-      context: ./thesis-backend/thesis-timescale-service
-    ports:
-      - "3000:3000"  # HTTP endpoint (not needed anymore)
-      - "50051:50051"  # gRPC endpoint
-    # profiles: ["sensors", "prod", "all"]
-    depends_on:
-      timescaledb:
-        condition: service_healthy 
-    environment:
-      TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
-    #   start_period: 40s
-    networks:
-      - app-network
+#   app-timescale-wrapper:
+#     build: 
+#       context: ./thesis-backend/thesis-timescale-service
+#     ports:
+#       - "3000:3000"  # HTTP endpoint (not needed anymore)
+#       - "50051:50051"  # gRPC endpoint
+#     # profiles: ["sensors", "prod", "all"]
+#     depends_on:
+#       timescaledb:
+#         condition: service_healthy 
+#     environment:
+#       TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
+#     # healthcheck:
+#     #   test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+#     #   interval: 30s
+#     #   timeout: 10s
+#     #   retries: 5
+#     #   start_period: 40s
+#     networks:
+#       - app-network
 
-  # REST + gRPC Server
-  sensor-py-service:
-    build:
-      context: ./thesis-backend/thesis-sensors-py-service
-    ports:
-      - "8004:8000" # HTTP API
-    # profiles: ["sensors", "prod", "all"]
-    volumes:
-      - ./thesis-backend/thesis-sensors-py-service:/app
-    environment:
-      - PYTHONUNBUFFERED=1
-    depends_on:
-      - timescaledb
-    networks:
-      - app-network
+#   # REST + gRPC Server
+#   sensor-py-service:
+#     build:
+#       context: ./thesis-backend/thesis-sensors-py-service
+#     ports:
+#       - "8004:8000" # HTTP API
+#     # profiles: ["sensors", "prod", "all"]
+#     volumes:
+#       - ./thesis-backend/thesis-sensors-py-service:/app
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#     depends_on:
+#       - timescaledb
+#     networks:
+#       - app-network
 
 networks:
   app-network:
     driver: bridge
 
-volumes:
-      postgres_data: 
-      mongo_data:
-      timescale-data:
+# volumes:
+#       postgres_data: 
+#       mongo_data:
+#       timescale-data:
