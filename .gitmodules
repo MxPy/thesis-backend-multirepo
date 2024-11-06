@@ -15,11 +15,6 @@
 	url = https://github.com/MxPy/thesis-mock-server
 	branch = master
 
-[submodule "thesis-prototype-frontend"]
-	path = Frontend/thesis-prototype-frontend
-	url = https://github.com/MxPy/thesis-prototype-frontend
-	branch = master
-
 
 [submodule "thesis-backend"]
 	path = thesis-backend
