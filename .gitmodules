@@ -15,7 +15,6 @@
 	url = https://github.com/MxPy/thesis-mock-server
 	branch = master
 
-
 [submodule "thesis-backend"]
 	path = thesis-backend
 	url = https://github.com/iraszewska/thesis-backend.git
