@@ -8,16 +8,16 @@
 ~~5. `docker compose --profile [with selected services (see compose file)] up -d` 6. `docker compose watch` \*for development only~~
 
 7. `cd .\thesis-backend\`
-8. Run commands:
+   At this point, just to make sure everything is up-to-date run commands:
 
 - `git submodule init`
 - `git submodule update --remote --recursive`
 
-9. `cd .\thesis-sensors-py-service\`
-10. `python -m venv venv`
-11. `venv/Scripts/activate`
-12. `pip install -r requirements.txt`
-13. Run commands:
+8. `cd .\thesis-sensors-py-service\`
+9. `python -m venv venv`
+10. `venv/Scripts/activate`
+11. `pip install -r requirements.txt`
+12. Run commands:
 
 - `python -m grpc_tools.protoc -I ./protos --python_out=. --grpc_python_out=. sensor.proto`
 
@@ -25,8 +25,8 @@
 
 - `python -m grpc_tools.protoc -I ./protos --python_out=. --grpc_python_out=. workout.proto`
 
-14. `cd ../..`
-15. `docker compose up --build` to run base services
+13. `cd ../..`
+14. `docker compose up --build` to run base services
 
 > If it still won't work message [@MxPy](https://github.com/MxPy) or [@iraszewska](https://github.com/iraszewska)
 
