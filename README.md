@@ -30,5 +30,13 @@
 
 > If it still won't work message [@MxPy](https://github.com/MxPy) or [@iraszewska](https://github.com/iraszewska)
 
+## Running only sensors-specific services
+Use the `docker compose` command to bring up services associated with the `core` profile:
+
+```docker compose --profile core up```
+
+It's especially useful in terms of managing the [admin panel](https://github.com/iraszewska/thesis-frontend)
+
+## Architecture diagram
 C4 Architecture diagram is in Documentation folder
 you can render it here: https://structurizr.com/dsl
