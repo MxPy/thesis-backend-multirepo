@@ -21,6 +21,7 @@ services:
     #   - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
+    profiles: ["core"]
   
   admin-gateway:
     build:
@@ -79,10 +80,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    profiles: ["core","all"]
 
   mock:
     build:
-      context: ./thesis-mock-server
+      context: ./thes"is-mock-server
       dockerfile: Dockerfile
     develop:
       watch:
@@ -115,6 +117,7 @@ services:
       interval: 10s
       timeout: 30s
       retries: 3
+    profiles: ["all"]
 
   minio:
     container_name: minio
@@ -154,6 +157,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    profiles: ["all", "core"]
 
   db:
     image: postgres:latest
@@ -173,6 +177,7 @@ services:
       retries: 5
     networks:
       - app-network
+    profiles: ["core"] 
   
   timescaledb:
     image: timescale/timescaledb:latest-pg16
@@ -193,6 +198,7 @@ services:
       retries: 5
     networks:
       - app-network
+    profiles: ["core"]
   
   app-postgres-wrapper:
     build:
@@ -214,6 +220,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
+    profiles: ["core"]
 
   # REST + gRPC Server
   user-node-service:
@@ -231,7 +238,8 @@ services:
       retries: 5
       start_period: 40s
     networks:
-      - app-network   
+      - app-network  
+    profiles: ["core"] 
   
   app-timescale-wrapper:
     build: 
@@ -253,6 +261,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
+    profiles: ["core"]
 
   # REST + gRPC Server
   sensor-py-service:
@@ -269,6 +278,7 @@ services:
       - timescaledb
     networks:
       - app-network
+    profiles: ["core"]
 
 networks:
   app-network:
