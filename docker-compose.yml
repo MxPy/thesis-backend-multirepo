@@ -84,7 +84,7 @@ services:
 
   mock:
     build:
-      context: ./thes"is-mock-server
+      context: ./thesis-mock-server
       dockerfile: Dockerfile
     develop:
       watch:
