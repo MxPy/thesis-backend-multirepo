@@ -21,7 +21,7 @@ services:
     #   - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
-    profiles: ["core"]
+    profiles: ["core", "all"]
   
   admin-gateway:
     build:
@@ -177,7 +177,7 @@ services:
       retries: 5
     networks:
       - app-network
-    profiles: ["core"] 
+    profiles: ["core", "all"] 
   
   timescaledb:
     image: timescale/timescaledb:latest-pg16
@@ -198,7 +198,7 @@ services:
       retries: 5
     networks:
       - app-network
-    profiles: ["core"]
+    profiles: ["core", "all"]
   
   app-postgres-wrapper:
     build:
@@ -220,7 +220,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
-    profiles: ["core"]
+    profiles: ["core", "all"]
 
   # REST + gRPC Server
   user-node-service:
@@ -239,7 +239,7 @@ services:
       start_period: 40s
     networks:
       - app-network  
-    profiles: ["core"] 
+    profiles: ["core", "all"] 
   
   app-timescale-wrapper:
     build: 
@@ -261,7 +261,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
-    profiles: ["core"]
+    profiles: ["core", "all"]
 
   # REST + gRPC Server
   sensor-py-service:
@@ -278,7 +278,7 @@ services:
       - timescaledb
     networks:
       - app-network
-    profiles: ["core"]
+    profiles: ["core", "all"]
 
 networks:
   app-network:
