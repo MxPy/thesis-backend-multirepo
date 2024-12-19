@@ -276,6 +276,7 @@ services:
       - PYTHONUNBUFFERED=1
     depends_on:
       - timescaledb
+      - rabbitmq
     networks:
       - app-network
     profiles: ["core", "all"]
