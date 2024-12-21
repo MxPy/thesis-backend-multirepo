@@ -26,7 +26,13 @@
 - `python -m grpc_tools.protoc -I ./protos --python_out=. --grpc_python_out=. workout.proto`
 
 13. `cd ../..`
-14. `docker compose up --build` to run base services
+14. `docker compose --profile all up --build` to run base services
+
+**Optional:**
+
+15. Create `.env` file in the root folder and paste this:
+```COMPOSE_PROFILES=all```
+Then save, and from now on you can use a regular `docker compose up --build` without specifying the profile
 
 > If it still won't work message [@MxPy](https://github.com/MxPy) or [@iraszewska](https://github.com/iraszewska)
 
@@ -35,7 +41,7 @@ Use the `docker compose` command to bring up services associated with the `core`
 
 ```docker compose --profile core up```
 
-It's especially useful in terms of managing the [admin panel](https://github.com/iraszewska/thesis-frontend)
+Whole traffic regarding [admin panel](https://github.com/iraszewska/thesis-frontend) is routed by the gateway now, but this still can be useful in terms of developing the sensors data related backend. 
 
 ## Architecture diagram
 C4 Architecture diagram is in Documentation folder
