@@ -27,11 +27,9 @@ services:
     build:
         context: ./thesis-prototype-admin-apigateway
         dockerfile: Dockerfile
-    depends_on:
-      users:
-        condition: service_healthy
-      mock:
-        condition: service_healthy
+    # depends_on:
+    #   users:
+    #     condition: service_healthy
     profiles: ["admin", "prod", "all"]
     develop:
       watch:
@@ -117,7 +115,7 @@ services:
       interval: 10s
       timeout: 30s
       retries: 3
-    profiles: ["all"]
+    profiles: ["core", "all"]
 
   minio:
     container_name: minio
