@@ -147,6 +147,7 @@ services:
       - app-network
     expose:
       - 27017
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
     environment:
       MONGO_INITDB_ROOT_USERNAME: Username
       MONGO_INITDB_ROOT_PASSWORD: Password
