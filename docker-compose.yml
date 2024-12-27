@@ -1,8 +1,8 @@
 services:
   gateway:
     build:
-        context: ./thesis-prototype-apigateway
-        dockerfile: Dockerfile
+      context: ./thesis-prototype-apigateway
+      dockerfile: Dockerfile
     ports:
       - 8000:8000
     depends_on:
@@ -21,18 +21,18 @@ services:
     #   - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
-    profiles: ["core", "all"]
+    profiles: [ "core", "all" ]
   
   admin-gateway:
     build:
-        context: ./thesis-prototype-admin-apigateway
-        dockerfile: Dockerfile
+      context: ./thesis-prototype-admin-apigateway
+      dockerfile: Dockerfile
     depends_on:
       users:
         condition: service_healthy
       mock:
         condition: service_healthy
-    profiles: ["admin", "prod", "all"]
+    profiles: [ "admin", "prod", "all" ]
     develop:
       watch:
         - action: sync
@@ -76,11 +76,11 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://users:8000/health"]
+      test: [ "CMD", "curl", "-f", "http://users:8000/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ["core","all"]
+    profiles: [ "core","all" ]
 
   mock:
     build:
@@ -95,11 +95,11 @@ services:
           path: ./thesis-mock-server/req.txt
     ports:
       - 8003:8000
-    profiles: ["mock","images", "all"]
+    profiles: [ "mock","images", "all" ]
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://users:8000/health"]
+      test: [ "CMD", "curl", "-f", "http://users:8000/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -117,13 +117,13 @@ services:
       interval: 10s
       timeout: 30s
       retries: 3
-    profiles: ["all"]
+    profiles: [ "all", "core" ]
 
   minio:
     container_name: minio
     image: minio/minio
     restart: always
-    profiles: ["mock","minio","images", "all"]
+    profiles: [ "mock","minio","images", "all" ]
     command: server --console-address :9001 --address 0.0.0.0:9000 /data
     networks:
       - app-network
@@ -152,12 +152,12 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: Password
       MONGO_INITDB_DATABASE: sessions
     healthcheck:
-      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD","mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 5s
-    profiles: ["all", "core"]
+    profiles: [ "all", "core" ]
 
   db:
     image: postgres:latest
@@ -167,17 +167,17 @@ services:
     expose:
       - 5433
     environment:
-      POSTGRES_DB: postgres     
-      POSTGRES_USER: postgres            
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - app-network
-    profiles: ["core", "all"] 
+    profiles: [ "core", "all" ]
   
   timescaledb:
     image: timescale/timescaledb:latest-pg16
@@ -192,18 +192,18 @@ services:
     volumes:
       - timescale-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 30s
       timeout: 10s
       retries: 5
     networks:
       - app-network
-    profiles: ["core", "all"]
+    profiles: [ "core", "all" ]
   
   app-postgres-wrapper:
     build:
       context: ./thesis-backend/thesis-health-wrapper
-    ports: 
+    ports:
       # - 3001  # HTTP
       - "50053:50053"  # Changed external gRPC port to avoid conflict
     # profiles: ["sensors", "prod", "all"]
@@ -220,7 +220,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
-    profiles: ["core", "all"]
+    profiles: [ "core", "all" ]
 
   # REST + gRPC Server
   user-node-service:
@@ -232,17 +232,17 @@ services:
       # - "50052:50052"  # gRPC for UserService 
     # profiles: ["sensors", "prod", "all"]
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/check || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000/check || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
     networks:
-      - app-network  
-    profiles: ["core", "all"] 
+      - app-network
+    profiles: [ "core", "all" ]
   
   app-timescale-wrapper:
-    build: 
+    build:
       context: ./thesis-backend/thesis-timescale-service
     ports:
       - "3000:3000"  # HTTP endpoint (not needed anymore)
@@ -250,7 +250,7 @@ services:
     # profiles: ["sensors", "prod", "all"]
     depends_on:
       timescaledb:
-        condition: service_healthy 
+        condition: service_healthy
     environment:
       TIMESCALE_URL: postgres://postgres:pass@timescaledb:5432/timescaledb
     # healthcheck:
@@ -261,7 +261,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
-    profiles: ["core", "all"]
+    profiles: [ "core", "all" ]
 
   # REST + gRPC Server
   sensor-py-service:
@@ -279,13 +279,13 @@ services:
       - rabbitmq
     networks:
       - app-network
-    profiles: ["core", "all"]
+    profiles: [ "core", "all" ]
 
 networks:
   app-network:
     driver: bridge
 
 volumes:
-      postgres_data: 
-      mongo_data:
-      timescale-data:
+  postgres_data:
+  mongo_data:
+  timescale-data:
