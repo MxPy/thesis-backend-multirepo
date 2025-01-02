@@ -20,3 +20,7 @@
 	url = https://github.com/iraszewska/thesis-backend.git
 	branch = main
 
+[submodule "thesis-frontend"]
+	path = thesis-frontend
+	url = https://github.com/iraszewska/thesis-frontend.git
+	branch = main

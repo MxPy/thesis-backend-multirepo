@@ -123,7 +123,7 @@ services:
     container_name: minio
     image: minio/minio
     restart: always
-    profiles: [ "mock","minio","images", "all" ]
+    profiles: [ "mock","minio","images", "all", "frontend" ]
     command: server --console-address :9001 --address 0.0.0.0:9000 /data
     networks:
       - app-network
@@ -137,7 +137,35 @@ services:
       MINIO_PORT: 9000
       MINIO_SECURE: False
       MINIO_BUCKET_NAME: minio-bucket
+      
   
+  frontend:
+      build:
+        context: ./thesis-frontend
+        dockerfile: Dockerfile
+      networks:
+        - app-network
+      profiles: [ "frontend" ]
+      depends_on:
+      - minio
+
+  s3www:
+    image: maymeow/s3www
+    depends_on:
+      - frontend
+    command:
+      - "--endpoint=http://minio:9000"
+      - "--accessKey=username"
+      - "--secretKey=password"
+      - "--bucket=static"
+      - "--address=0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    profiles: [ "frontend" ]
+
+
   mongo:
     image: mongo:latest
     volumes:
