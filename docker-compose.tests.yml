@@ -1,0 +1,17 @@
+services:
+  app-postgres-wrapper:
+    build:
+      context: ./thesis-backend/thesis-health-wrapper
+      dockerfile: Dockerfile.test
+  user-node-service:
+    build:
+      context: ./thesis-backend/thesis-health-data-provider
+      dockerfile: Dockerfile.test
+  app-timescale-wrapper:
+    build:
+      context: ./thesis-backend/thesis-timescale-service
+      dockerfile: Dockerfile.test
+  sensor-py-service:
+    build:
+      context: ./thesis-backend/thesis-sensors-py-service
+      dockerfile: Dockerfile.test

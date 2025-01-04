@@ -20,3 +20,7 @@
 	url = https://github.com/iraszewska/thesis-backend.git
 	branch = main
 
+[submodule "thesis-forum-monorepo"]
+	path = thesis-forum-monorepo
+	url = https://github.com/MxPy/thesis-forum-monorepo.git
+	branch = master

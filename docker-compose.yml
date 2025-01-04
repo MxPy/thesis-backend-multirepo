@@ -21,7 +21,7 @@ services:
     #   - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
-    profiles: [ "core", "all" ]
+    profiles: [ "core", "all", "forum" ]
   
   admin-gateway:
     build:
@@ -80,7 +80,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: [ "core","all" ]
+    profiles: [ "core","all", "forum" ]
 
   mock:
     build:
@@ -117,13 +117,13 @@ services:
       interval: 10s
       timeout: 30s
       retries: 3
-    profiles: [ "all", "core" ]
+    profiles: [ "all", "core", "forum" ]
 
   minio:
     container_name: minio
     image: minio/minio
     restart: always
-    profiles: [ "mock","minio","images", "all" ]
+    profiles: [ "mock","minio","images", "all", "forum" ]
     command: server --console-address :9001 --address 0.0.0.0:9000 /data
     networks:
       - app-network
@@ -158,7 +158,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    profiles: [ "all", "core" ]
+    profiles: [ "all", "core", "forum" ]
 
   db:
     image: postgres:latest
@@ -178,7 +178,7 @@ services:
       retries: 5
     networks:
       - app-network
-    profiles: [ "core", "all" ]
+    profiles: [ "core", "all", "forum" ]
   
   timescaledb:
     image: timescale/timescaledb:latest-pg16
@@ -221,7 +221,7 @@ services:
     #   start_period: 40s
     networks:
       - app-network
-    profiles: [ "core", "all" ]
+    profiles: [ "core", "all", "forum" ]
 
   # REST + gRPC Server
   user-node-service:
@@ -281,6 +281,42 @@ services:
     networks:
       - app-network
     profiles: [ "core", "all" ]
+
+  read-api:
+    build:
+      context: ./thesis-forum-monorepo/thesis-read-api
+      dockerfile: Dockerfile
+    ports:
+      - 3005:3000
+    develop:
+      watch:
+        - action: sync
+          path: ./thesis-forum-monorepo/thesis-read-api
+          target: /app
+        - action: rebuild
+          path: ./thesis-forum-monorepo/thesis-read-api/package.json
+    networks:
+      - app-network
+    profiles: [ "core", "all", "forum" ]
+  
+  write-api:
+    build:
+      context: ./thesis-forum-monorepo/thesis-write-api
+      dockerfile: Dockerfile
+    ports:
+      - 3006:3000
+    develop:
+      watch:
+        - action: sync
+          path: ./thesis-forum-monorepo/thesis-write-api
+          target: /app
+        - action: rebuild
+          path: ./thesis-forum-monorepo/thesis-write-api/package.json
+    networks:
+      - app-network
+    profiles: [ "core", "all", "forum" ]
+
+  #galactus
 
 networks:
   app-network:
