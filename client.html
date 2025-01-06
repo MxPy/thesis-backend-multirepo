@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Post Upload</title>
+    <style>
+        /* Cute furry style */
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffe6f7, #d8f3dc);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #6a0572;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #bde0fe;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #ffcad4;
+        }
+
+        button {
+            background: #ffcad4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create Forum Post</h1>
+        <form id="forumForm">
+            <label for="sessionId">Session ID</label>
+            <input type="text" id="sessionId" name="sessionId" required placeholder="Enter your session ID">
+
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" name="userId" required placeholder="Enter your user ID">
+
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required placeholder="Enter the post title">
+
+            <label for="tag">Tag(s)</label>
+            <select id="tag" name="tag" multiple required>
+                <option value="General">General</option>
+                <option value="Help">Help</option>
+                <option value="Fun">Fun</option>
+            </select>
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Enter a description"></textarea>
+
+            <label for="image">Image</label>
+            <input type="file" id="image" name="image">
+
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+        <p id="responseMessage"></p>
+    </div>
+
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('forumForm');
+            const formData = new FormData(form);
+
+            // Pobieranie wartości pól
+            const sessionId = document.getElementById("sessionId").value;
+            const userId = document.getElementById("userId").value;
+            const title = document.getElementById("title").value;
+
+            // Sprawdzenie wymaganych pól
+            if (!sessionId || !userId || !title) {
+                alert("Session ID, User ID, and Title are required!");
+                return;
+            }
+
+            // Tworzenie parametrów zapytania
+            const queryParams = new URLSearchParams({ userId, title });
+
+            try {
+                const response = await fetch(`http://localhost:8000/forum-write/forum-posts?${queryParams.toString()}`, {
+                    method: "POST",
+                    headers: {
+                        "session-id": sessionId // Nagłówek z Session ID
+                    },
+                    body: formData // Pozostałe dane w ciele żądania
+                });
+
+                const responseText = await response.text();
+                const responseMessage = document.getElementById("responseMessage");
+
+                if (response.ok) {
+                    responseMessage.textContent = "Post created successfully!";
+                    responseMessage.style.color = "green";
+                } else {
+                    responseMessage.textContent = `Error: ${responseText}`;
+                    responseMessage.style.color = "red";
+                }
+            } catch (error) {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.textContent = `Error: ${error.message}`;
+                responseMessage.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
