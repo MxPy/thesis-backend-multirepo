@@ -123,7 +123,7 @@ services:
     container_name: minio
     image: minio/minio
     restart: always
-    profiles: [ "mock","minio","images", "all" ]
+    profiles: [ "mock","minio","images", "all", "core" ]
     command: server --console-address :9001 --address 0.0.0.0:9000 /data
     networks:
       - app-network
