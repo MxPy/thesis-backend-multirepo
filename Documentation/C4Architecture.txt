@@ -1,53 +1,46 @@
 workspace {
-
     model {
-        user = person "Urzytkownik" "opis"
-        admin = person "Administrator" "opis"
+        user = person "Urzytkownik" "Końcowy użytkownik systemu monitorowania zdrowia"
+        admin = person "Administrator" "Osoba zarządzająca systemem i monitorująca jego działanie"
             
-        softwareSystem = softwareSystem "Część serwerowa" "opis"{
+        softwareSystem = softwareSystem "Część serwerowa" "Centralna część systemu odpowiedzialna za przetwarzanie i przechowywanie danych"{
             group BramaSystemu {
-                api = container "BramaAPI" "opis"
-                aa = container "SerwisAutoryzacjiIUwierzytelnianiaUrzytkowników" "opis"
+                api = container "BramaAPI" "Główny punkt dostępowy do systemu obsługujący żądania od klientów"
+                aa = container "SerwisAutoryzacjiIUwierzytelnianiaUrzytkowników" "Komponent odpowiedzialny za bezpieczeństwo i zarządzanie dostępem"
                 api -> aa "Wysyła zapytanie o autoryzacje i uwierzytelnienie użytkownika"
                 api -> aa "Przekazuje zapytania i odpowiedzi o dane kont użytkowników"
-                
-                
             }
+            
             group SystemMonitorowaniaZdrowia {
-                dataPy = container "SerwisPrzetwarzaniaDanychDlaTreningów" "opis"
-                dataNode = container "SerwisZarządzaniaUrzytkownikami" "opis"
+                dataPy = container "SerwisPrzetwarzaniaDanychDlaTreningów" "Serwis analizujący i przetwarzający dane zdrowotne użytkowników"
+                dataNode = container "SerwisZarządzaniaUrzytkownikami" "Serwis zarządzający profilami i ustawieniami użytkowników"
                 
                 api -> dataPy "Przekazuje zapytania i odpowiedzi o dane zdrowotne użytkowników"
                 api -> dataNode "Przekazuje zapytania  i odpowiedzi o dane zdrowotne użytkowników"
             }
-            # group SystemSpołecznościowy {
-            #     read = container "SerwisOdczytu" "TBD"
-            #     write = container "SerwisZapisu" "TBD"
-            # }
 
-            
             group SystemPrzechowywaniaDanych {
-                sqlWraper = container "BramkaDostępowaRelacyjnejBazyDanych" "opis"
-                timeWrpaer = container "BramkaDostępowaRelacyjnejBazyDanychSzeregówCzasowych" "opis"
-                sql = container "BazaDanychRelacyjna" "opis"{
+                sqlWraper = container "BramkaDostępowaRelacyjnejBazyDanych" "Interfejs dostępu do bazy SQL"
+                timeWrpaer = container "BramkaDostępowaRelacyjnejBazyDanychSzeregówCzasowych" "Interfejs dostępu do bazy szeregów czasowych"
+                sql = container "BazaDanychRelacyjna" "Główna baza danych przechowująca strukturalne dane użytkowników"{
                     tags "Database"
                 }
-                nosql = container "BazaDanychNieRelacyjna" "opis"{
+                nosql = container "BazaDanychNieRelacyjna" "Baza danych do przechowywania danych sesji i cachowania"{
                     tags "Database"
                 }
-                time = container "BazaDanychRelacyjnaSzeregówCzasowych" "opis"{
+                time = container "BazaDanychRelacyjnaSzeregówCzasowych" "Baza danych do przechowywania historycznych danych zdrowotnych"{
                     tags "Database"
                 }
-                avatars = container "BazaDanychObiektówAwatarówUrzytkowników" "opis"{
+                avatars = container "BazaDanychObiektówAwatarówUrzytkowników" "Magazyn awatarów użytkowników"{
                     tags "Database"
                 }
-                images = container "BazaDanychObiektówObraków" "opis"{
+                images = container "BazaDanychObiektówObraków" "Magazyn zdjęć i grafik systemu"{
                     tags "Database"
                 }
-                ota = container "BazaDanychObiektówOprogramowaniaOpaski" "opis"{
+                ota = container "BazaDanychObiektówOprogramowaniaOpaski" "Repozytorium aktualizacji firmware opaski"{
                     tags "Database"
                 }
-                graphs = container "BazaDanychObiektówDanychDoGrafówDanychZdrowotnych" "opis"{
+                graphs = container "BazaDanychObiektówDanychDoGrafówDanychZdrowotnych" "Baza do przechowywania powiązań między danymi zdrowotnymi"{
                     tags "Database"
                 }
                 
@@ -65,21 +58,15 @@ workspace {
                 sqlWraper -> sql "Zapisuje i Odczytuje dane zdrowotne użytkowników"
                 
                 dataPy -> graphs "Przesyła i odbiera dane o grafach danych zdrowotnych użytkowników"
-                
-                
-                
             }
             
             group BrokerWiadomości {
-                queueAdmin = container "KolejkaInformacjiAdministracyjnych" "opis"{
+                queueAdmin = container "KolejkaInformacjiAdministracyjnych" "Kolejka do przesyłania powiadomień administracyjnych"{
                     tags "Database"
                 }
-                queueData = container "KolejkaInformacjiZdrowotnych" "opis"{
+                queueData = container "KolejkaInformacjiZdrowotnych" "Kolejka do przesyłania powiadomień o danych zdrowotnych"{
                     tags "Database"
                 }
-                # queueSocial = container "KolejkaInformacjiSpołecznościowych" "opis"{
-                #     tags "Database"
-                # }
                 queueAdmin -> api "Przesyła informacje administracyjne"
                 queueData -> api "Przesyła informacje zdrowotne"
                 
@@ -88,7 +75,7 @@ workspace {
             } 
                 
             group PanelAdministracyjny {
-                adminPanel = container "PanelAdministracyjny" "opis"
+                adminPanel = container "PanelAdministracyjny" "Interfejs zarządzania systemem dla administratorów"
                 
                 admin -> adminPanel "Używa"
                 adminPanel -> api "Wysyła zapytania o dane zdrowotne i kont użytkowników"
@@ -96,14 +83,15 @@ workspace {
                 api -> adminPanel "Przesyła powiadomienia o danych administracyjnych"
             }
         }
-        bandSystem = softwareSystem "Opaska sportowa" "opis"{
+        
+        bandSystem = softwareSystem "Opaska sportowa" "Urządzenie noszone zbierające dane biometryczne użytkownika"{
             group CzęśćSprzętowa {
-                mcu = container "Mikrokontroler ESP32" "opis"
-                sensors = container "Czujniki" "Pulsometr oraz akcelelrometr"
-                card = container "Karta pamięci" "opis"
+                mcu = container "Mikrokontroler ESP32" "Główny procesor opaski odpowiedzialny za zbieranie i przetwarzanie danych"
+                sensors = container "Czujniki" "Zestaw czujników do pomiaru parametrów zdrowotnych"
+                card = container "Karta pamięci" "Pamięć do tymczasowego przechowywania danych"
             }
             group CzęśćOprogramowaniaSprzętowego {
-                firmware = container "Oprogramowanie opaski" "opis"
+                firmware = container "Oprogramowanie opaski" "System operacyjny i oprogramowanie sterujące opaską"
             }
             
             user -> bandSystem "Nosi"
@@ -114,10 +102,11 @@ workspace {
             mcu -> card "Jest połączony"
             ota -> bandSystem "Przesyła nową wersje oprogramowania"
         }
-        appSystem = softwareSystem "Aplikacje mobilne" "opis"{
+        
+        appSystem = softwareSystem "Aplikacje mobilne" "Aplikacje na urządzenia mobilne do interakcji z systemem"{
             group AplikacjaIOS {
-                iosApp = container "Aplikacja iOS" "opis"
-                iosDb = container "Baza tymczasowych danych zdrowotnych iOS" "opis"{
+                iosApp = container "Aplikacja iOS" "Aplikacja mobilna dla systemu iOS"
+                iosDb = container "Baza tymczasowych danych zdrowotnych iOS" "Lokalna baza danych na urządzeniach iOS"{
                     tags "Database"
                 }
                 
@@ -127,8 +116,8 @@ workspace {
                 iosApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
             }
             group AplikacjaAndrioid {
-                androidApp = container "Aplikacja Android" "opis"
-                androidDb = container "Baza tymczasowych danych zdrowotnych Android" "opis"{
+                androidApp = container "Aplikacja Android" "Aplikacja mobilna dla systemu Android"
+                androidDb = container "Baza tymczasowych danych zdrowotnych Android" "Lokalna baza danych na urządzeniach Android"{
                     tags "Database"
                 }
                 
@@ -142,17 +131,14 @@ workspace {
             images -> appSystem "Pobiera obrazki użytkowników"
             avatars -> appSystem "Pobiera awatary użytkowników"
         }
-        
-        
     }
 
     views {
-    styles {
-        element "Database" {
-                    shape cylinder
-                }
+        styles {
+            element "Database" {
+                shape cylinder
             }
+        }
         theme default
-        
     }
 }
