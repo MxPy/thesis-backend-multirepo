@@ -282,6 +282,33 @@ services:
       - app-network
     profiles: [ "core", "all" ]
 
+  task-frontend-deploy:
+    build:
+      context: .
+      dockerfile: ./terraform/Dockerfile
+    depends_on:
+      - minio
+    networks:
+      - app-network
+    profiles: ["frontend"]
+
+  s3www:
+    image: maymeow/s3www
+    depends_on:
+      task-frontend-deploy:
+        condition: service_completed_successfully
+    command:
+      - "--endpoint=http://minio:9000"
+      - "--accessKey=username"
+      - "--secretKey=password"
+      - "--bucket=static"
+      - "--address=0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    profiles: [ "frontend" ]
+
 networks:
   app-network:
     driver: bridge
