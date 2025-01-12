@@ -295,8 +295,7 @@ services:
   s3www:
     image: maymeow/s3www
     depends_on:
-      task-frontend-deploy:
-        condition: service_completed_successfully
+      - minio
     command:
       - "--endpoint=http://minio:9000"
       - "--accessKey=username"
