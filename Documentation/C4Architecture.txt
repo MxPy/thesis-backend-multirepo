@@ -1,51 +1,44 @@
 workspace {
     model {
-        user = person "Urzytkownik" "Końcowy użytkownik systemu monitorowania zdrowia"
+        user = person "Użytkownik" "Końcowy użytkownik systemu monitorowania zdrowia"
         admin = person "Administrator" "Osoba zarządzająca systemem i monitorująca jego działanie"
             
         softwareSystem = softwareSystem "Część serwerowa" "Centralna część systemu odpowiedzialna za przetwarzanie i przechowywanie danych"{
-            group BramaSystemu {
+            group SystemBramyDostępu {
                 api = container "BramaAPI" "Główny punkt dostępowy do systemu obsługujący żądania od klientów"
-                aa = container "SerwisAutoryzacjiIUwierzytelnianiaUrzytkowników" "Komponent odpowiedzialny za bezpieczeństwo i zarządzanie dostępem"
+                aa = container "Serwis Autoryzacji I Uwierzytelniania Użytkowników" "Serwis odpowiedzialny za bezpieczeństwo i uprawnienia użytkowników"
+                adminPanel = container "Panel Administracyjny" "Interfejs zarządzania danymi systemu"
                 api -> aa "Wysyła zapytanie o autoryzacje i uwierzytelnienie użytkownika"
                 api -> aa "Przekazuje zapytania i odpowiedzi o dane kont użytkowników"
             }
             
             group SystemMonitorowaniaZdrowia {
-                dataPy = container "SerwisPrzetwarzaniaDanychDlaTreningów" "Serwis analizujący i przetwarzający dane zdrowotne użytkowników"
-                dataNode = container "SerwisZarządzaniaUrzytkownikami" "Serwis zarządzający profilami i ustawieniami użytkowników"
+                dataPy = container "Serwis Przetwarzania Danych Zdrowotnych" "Serwis przetwarzający dane z czujników i generuje dane treningowe"
+                dataNode = container "Serwis Dostępu Danych Zdrowotnych" "Serwis obsługujący operacje CRUD dla użytkowników, treningów i danych z czujników"
                 
-                api -> dataPy "Przekazuje zapytania i odpowiedzi o dane zdrowotne użytkowników"
-                api -> dataNode "Przekazuje zapytania  i odpowiedzi o dane zdrowotne użytkowników"
+                api -> dataPy "Przekazuje żądania przetwarzania danych z czujników"
+                api -> dataNode  "Przekazuje zapytania i odpowiedzi o dane zdrowotne użytkowników"
             }
 
             group SystemPrzechowywaniaDanych {
-                sqlWraper = container "BramkaDostępowaRelacyjnejBazyDanych" "Interfejs dostępu do bazy SQL"
-                timeWrpaer = container "BramkaDostępowaRelacyjnejBazyDanychSzeregówCzasowych" "Interfejs dostępu do bazy szeregów czasowych"
-                sql = container "BazaDanychRelacyjna" "Główna baza danych przechowująca strukturalne dane użytkowników"{
+                sqlWraper = container "Bramka Dostępowa Relacyjnej Bazy Danych"
+                timeWrpaer = container "Bramka Dostępowa Relacyjnej Bazy Danych Szeregów Czasowych"
+                sql = container "Baza Danych Relacyjna" "Główna baza danych przechowująca strukturalne dane użytkowników"{
                     tags "Database"
                 }
-                nosql = container "BazaDanychNieRelacyjna" "Baza danych do przechowywania danych sesji i cachowania"{
+                nosql = container "Baza Danych Nie Relacyjna" "Baza danych do przechowywania danych sesji"{
                     tags "Database"
                 }
-                time = container "BazaDanychRelacyjnaSzeregówCzasowych" "Baza danych do przechowywania historycznych danych zdrowotnych"{
+                time = container "Baza Danych Relacyjna Szeregów Czasowych" "Baza danych do przechowywania nie przetworzonych danych zdrowotnych"{
                     tags "Database"
                 }
-                avatars = container "BazaDanychObiektówAwatarówUrzytkowników" "Magazyn awatarów użytkowników"{
+                ota = container "Baza Danych Obiektów Oprogramowania Opaski" "Baza do przechowywania wersji oprogramowania sprzętowego opaski"{
                     tags "Database"
                 }
-                images = container "BazaDanychObiektówObraków" "Magazyn zdjęć i grafik systemu"{
-                    tags "Database"
-                }
-                ota = container "BazaDanychObiektówOprogramowaniaOpaski" "Repozytorium aktualizacji firmware opaski"{
-                    tags "Database"
-                }
-                graphs = container "BazaDanychObiektówDanychDoGrafówDanychZdrowotnych" "Baza do przechowywania powiązań między danymi zdrowotnymi"{
+                graphs = container "Baza Danych Obiektów Grafów" "Baza do przechowywania zmian parametrów zdrowotnych w czasie"{
                     tags "Database"
                 }
                 
-                api -> avatars "Zapisuje awatary użytkowników"
-                api -> images "Zapisuje obrazki użytkowników"
                 api -> ota "Zapisuje nowe wersje oprogramowania opaski"
                 aa -> nosql "Zapisuje i odczytuje informacje sesji użytkowników"
                 
@@ -53,18 +46,18 @@ workspace {
                 dataPy -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
                 dataNode -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
                 
-                dataPy -> timeWrpaer "Przesyła i odbiera szeregi czaowe danych zdrowotnych użytkowników"
-                timeWrpaer -> time "Zapisuje i odczytuje szeregi czaowe danych zdrowotnych użytkowników"
-                sqlWraper -> sql "Zapisuje i Odczytuje dane zdrowotne użytkowników"
+                dataPy -> timeWrpaer "Przesyła i odbiera szeregi czasowe danych zdrowotnych użytkowników"
+                timeWrpaer -> time "Zapisuje i odczytuje szeregi czasowe danych zdrowotnych użytkowników"
+                sqlWraper -> sql "Zapisuje i odczytuje dane zdrowotne użytkowników"
                 
-                dataPy -> graphs "Przesyła i odbiera dane o grafach danych zdrowotnych użytkowników"
+                dataPy -> graphs "Przesyła i odbiera dane o parametrów zdrowotnych w czasie"
             }
             
-            group BrokerWiadomości {
-                queueAdmin = container "KolejkaInformacjiAdministracyjnych" "Kolejka do przesyłania powiadomień administracyjnych"{
+            group SystemPośrednictwaWiadomości {
+                queueAdmin = container "Kolejka Informacji Administracyjnych" "Kolejka do przesyłania powiadomień administracyjnych"{
                     tags "Database"
                 }
-                queueData = container "KolejkaInformacjiZdrowotnych" "Kolejka do przesyłania powiadomień o danych zdrowotnych"{
+                queueData = container "Kolejka Informacji Zdrowotnych" "Kolejka do przesyłania powiadomień o danych zdrowotnych"{
                     tags "Database"
                 }
                 queueAdmin -> api "Przesyła informacje administracyjne"
@@ -74,19 +67,17 @@ workspace {
                 dataPy -> queueData "Przesyła informacje zdrowotne"
             } 
                 
-            group PanelAdministracyjny {
-                adminPanel = container "PanelAdministracyjny" "Interfejs zarządzania systemem dla administratorów"
-                
-                admin -> adminPanel "Używa"
-                adminPanel -> api "Wysyła zapytania o dane zdrowotne i kont użytkowników"
-                adminPanel -> api "Wysyła nową wersje systemu opaski"
-                api -> adminPanel "Przesyła powiadomienia o danych administracyjnych"
-            }
+        
+            admin -> adminPanel "Używa"
+            adminPanel -> api "Wysyła zapytania o dane zdrowotne i kont użytkowników"
+            adminPanel -> api "Wysyła nową wersje systemu opaski"
+            api -> adminPanel "Przesyła powiadomienia o danych administracyjnych"
+            
         }
         
-        bandSystem = softwareSystem "Opaska sportowa" "Urządzenie noszone zbierające dane biometryczne użytkownika"{
+        bandSystem = softwareSystem "Opaska sportowa" "Urządzenie noszone zbierające dane zdrowotne użytkowników"{
             group CzęśćSprzętowa {
-                mcu = container "Mikrokontroler ESP32" "Główny procesor opaski odpowiedzialny za zbieranie i przetwarzanie danych"
+                mcu = container "Mikrokontroler ESP32" "Główny procesor opaski odpowiedzialny za zbieranie i przesył danych"
                 sensors = container "Czujniki" "Zestaw czujników do pomiaru parametrów zdrowotnych"
                 card = container "Karta pamięci" "Pamięć do tymczasowego przechowywania danych"
             }
@@ -115,7 +106,7 @@ workspace {
                 bandSystem -> iosApp "Przesyła dane o statusie opaski oraz zdrowotne"
                 iosApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
             }
-            group AplikacjaAndrioid {
+            group AplikacjaAndroid {
                 androidApp = container "Aplikacja Android" "Aplikacja mobilna dla systemu Android"
                 androidDb = container "Baza tymczasowych danych zdrowotnych Android" "Lokalna baza danych na urządzeniach Android"{
                     tags "Database"
@@ -126,10 +117,8 @@ workspace {
                 bandSystem -> androidApp "Przesyła dane o statusie opaski oraz zdrowotne"
                 androidApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
             }
-            api -> appSystem "Przesyła powiadomienia o danych zdrowowtnych"
+            api -> appSystem "Przesyła powiadomienia o danych zdrowotnych"
             appSystem -> api "Wysyła obrazki oraz awatary użytkowników"
-            images -> appSystem "Pobiera obrazki użytkowników"
-            avatars -> appSystem "Pobiera awatary użytkowników"
         }
     }
 
