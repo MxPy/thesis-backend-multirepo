@@ -39,12 +39,17 @@ workspace {
                     tags "Database"
                 }
                 
+                avatars = container "Baza Danych Obiektów Awatarów" "Baza do przechowywania awatarów użytkowników"{
+                    tags "Database"
+                }
+                
                 api -> ota "Zapisuje nowe wersje oprogramowania opaski"
                 aa -> nosql "Zapisuje i odczytuje informacje sesji użytkowników"
                 
                 aa -> sqlWraper "Przesyła i odbiera dane kont użytkowników"
                 dataPy -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
                 dataNode -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
+                avatars -> api "Wysyła awatary użytkowników"
                 
                 dataPy -> timeWrpaer "Przesyła i odbiera szeregi czasowe danych zdrowotnych użytkowników"
                 timeWrpaer -> time "Zapisuje i odczytuje szeregi czasowe danych zdrowotnych użytkowników"
@@ -116,9 +121,10 @@ workspace {
                 androidApp -> androidDb "Zapisuje i odczytuje tymczasowe dane zdrowotne"
                 bandSystem -> androidApp "Przesyła dane o statusie opaski oraz zdrowotne"
                 androidApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
+                avatars -> appSystem "Pobiera awatary użytkowników"
             }
             api -> appSystem "Przesyła powiadomienia o danych zdrowotnych"
-            appSystem -> api "Wysyła obrazki oraz awatary użytkowników"
+            appSystem -> api "Wysyła awatary użytkowników"
         }
     }
 
