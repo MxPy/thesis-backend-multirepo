@@ -22,7 +22,7 @@ workspace {
 
             group SystemPrzechowywaniaDanych {
                 sqlWraper = container "Bramka Dostępowa Relacyjnej Bazy Danych"
-                timeWrpaer = container "Bramka Dostępowa Relacyjnej Bazy Danych Szeregów Czasowych"
+                timeWraper = container "Bramka Dostępowa Relacyjnej Bazy Danych Szeregów Czasowych"
                 sql = container "Baza Danych Relacyjna" "Główna baza danych przechowująca strukturalne dane użytkowników"{
                     tags "Database"
                 }
@@ -49,10 +49,11 @@ workspace {
                 aa -> sqlWraper "Przesyła i odbiera dane kont użytkowników"
                 dataPy -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
                 dataNode -> sqlWraper "Przesyła i odbiera dane zdrowotne użytkowników"
+                dataNode -> timeWraper "Odbiera nieprzetworzone dane z czujników"
                 avatars -> api "Wysyła awatary użytkowników"
                 
-                dataPy -> timeWrpaer "Przesyła i odbiera szeregi czasowe danych zdrowotnych użytkowników"
-                timeWrpaer -> time "Zapisuje i odczytuje szeregi czasowe danych zdrowotnych użytkowników"
+                dataPy -> timeWraper "Przesyła i odbiera szeregi czasowe danych zdrowotnych użytkowników"
+                timeWraper -> time "Zapisuje i odczytuje szeregi czasowe danych zdrowotnych użytkowników"
                 sqlWraper -> sql "Zapisuje i odczytuje dane zdrowotne użytkowników"
                 
                 dataPy -> graphs "Przesyła i odbiera dane o parametrów zdrowotnych w czasie"
@@ -109,7 +110,7 @@ workspace {
                 user -> iosApp "Używa"
                 iosApp -> iosDb "Zapisuje i odczytuje tymczasowe dane zdrowotne"
                 bandSystem -> iosApp "Przesyła dane o statusie opaski oraz zdrowotne"
-                iosApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
+                
             }
             group AplikacjaAndroid {
                 androidApp = container "Aplikacja Android" "Aplikacja mobilna dla systemu Android"
@@ -121,6 +122,7 @@ workspace {
                 androidApp -> androidDb "Zapisuje i odczytuje tymczasowe dane zdrowotne"
                 bandSystem -> androidApp "Przesyła dane o statusie opaski oraz zdrowotne"
                 androidApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
+                iosApp -> bandSystem "Przesyła informacje o aktualizacji oprogramowania opaski"
                 avatars -> appSystem "Pobiera awatary użytkowników"
             }
             api -> appSystem "Przesyła powiadomienia o danych zdrowotnych"
