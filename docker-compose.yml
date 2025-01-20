@@ -17,8 +17,6 @@ services:
           target: /app
         - action: rebuild
           path: ./thesis-prototype-apigateway/req.txt
-    # volumes:
-    #   - ./thesis-prototype-apigateway:/app
     networks:
       - app-network
     profiles: [ "core", "all" ]
